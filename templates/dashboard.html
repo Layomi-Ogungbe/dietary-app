@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <style>
+        body {
+            font-family: 'Avenir', 'Georgia', sans-serif;
+            background: rgb(250, 248, 243);
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='images/experiment.jpg') }}");
+
+            background-repeat: no-repeat;
+            background-size: cover; 
+            background-attachment: fixed;
+            
+        }
+
+        header {
+            width : 100%;
+            height : 60px;
+            background-color: rgb(250, 248, 243);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-right{
+            display:flex;
+            gap: 0px;
+        }
+
+        .header-right a {
+            text-align: center;
+            width: 100px;
+            text-decoration: none;
+            color: black;
+            padding: 19px 22px;
+            transition: 0.3s;
+        }
+
+        .header-right a:hover {
+            background-color: #4c8753;
+            color: white;
+        }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        .welcome-section {
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            background-color: #142a1f;
+        }
+
+        .welcome-section h1 {
+            color:rgb(250, 248, 243);
+            font-size: clamp(48px, 5vw, 90px); 
+            margin: 0;
+            font-weight: bolder; 
+        }
+
+        .dashboard-section {
+            height: 90vh;
+            padding: 40px;
+            
+        }
+
+        .dashboard-grid{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            height: 100%;
+        }
+
+        .hub {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+            transition:  0.25s;
+            height: 50vh;
+            overflow: hidden;
+            display:flex;
+            flex-direction:column;
+            
+
+        }
+
+        .hub:hover {
+            cursor: pointer;
+            z-index: 999;
+            transform: scale(1.05);
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.4) ;
+            border: 2px solid rgba(227, 227, 227, 0.539) ;
+
+
+        }
+
+        .hub-title {
+            margin: 10px 0 10px 0px;
+            font-size: 18px;
+            font-weight: normal;
+            padding-bottom: 4px;
+            border-bottom: 1px solid gray;
+            text-indent: 20px;
+            margin-bottom: 0;
+
+        }
+
+        .hub-content{
+            flex:1;
+            padding: 20px 20px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            column-gap: 50px;
+            
+        }
+        
+
+        .calorie-meter {
+            border: 1px solid rgba(211, 210, 210, 0.797);
+            transition: 1s;
+            width: 200px;
+            height: 200px;
+            background: conic-gradient(
+                #ee1838d7 0deg var(--angle),
+                #d613306f calc(var(--angle) + 10deg) 360deg
+            );
+            border-radius: 50%;
+            justify-content: center;
+            position: relative;
+        }
+
+        .calorie-text {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgb(250, 248, 243);         
+            border-radius: 50px;
+            border: 1px solid rgba(211, 210, 210, 0.528);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.248);
+        }
+
+        .calorie-meter:hover {
+            background: conic-gradient(
+                #ee1838 0deg var(--angle),
+                #d613306f  calc(var(--angle) + 10deg) 360deg);
+            transform: rotateZ(360deg)  ;
+            box-shadow: 0px 0px 20px rgb(250, 249, 244) ;
+            border: 2px solid rgb(253, 252, 247);
+        }
+
+        .nutrient-bar {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 2s;
+            height: 90%;
+        }
+
+        .nutrient-bar:hover{
+            transform: scale(1.05) translateY(-10px);
+        }  
+
+        .bar {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            width: 20px;
+            height: 300px;      
+            background: #e6e6e667;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .fill {
+            width: 100%;
+            border-radius: 10px 10px 0 0;
+            transition: 0.3s ease;
+            height: var(--height, 0%);
+            background:rgba(0, 55, 28, 0.961) 
+        }
+
+        .fill:hover{
+            box-shadow: 0px -2px 5px rgba(255, 244, 197, 0.217);
+            border: 1px solid rgb(255, 255, 238);
+        }
+
+    
+        .protein { background: #da2d16; }
+        .carbs   { background: #0d5cdb; }
+        .fats    { background: #e9b31c; }
+        .sugar { background: #49056b; }
+        .fiber   { background: #df66e3; }
+        .sodium    { background: #03542a; }
+        
+
+        .nutrient-bar span{
+            font-weight: bold;
+        }
+   
+        .carousel {
+            height: 250px;
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 20px;
+            padding: 20px;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+         
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel-item {
+            flex: 0 0 80%;              
+            scroll-snap-align: center;  
+            background: rgb(255, 255, 255);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            text-decoration: none;
+            color:inherit;
+            overflow: hidden;
+        }
+
+        .water-glass{
+            width:120px;
+            height:180px;
+            border:3px solid white;
+            border-radius:10px 10px 30px 30px;
+            position:relative;
+            overflow:hidden;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .water-fill{
+        position:absolute;
+        bottom:0;
+        width:100%;
+        height: 0%;
+        background: linear-gradient(#6bd3ff,#1f9eff);
+        transition: height 0.4s ease;
+        overflow: hidden;
+        }
+
+        .water-btn{
+            width:40px;
+            height:40px;
+            font-size:24px;
+            border:none;
+            border-radius:50%;
+            cursor:pointer;
+            background:#4c8753;
+            color:white;
+            transition:0.2s;
+        }
+
+        .water-btn:hover{
+            transform:scale(1.1);
+            background:#3a6d40;
+        }
+
+        /* bubbles just something cool i thought of adding */
+        .bubble{
+            position:absolute;
+            bottom:-18px;
+            border-radius:999px;
+            background: rgba(255,255,255,0.65);
+            filter: blur(0.2px);
+            animation: bubbleUp 3.2s linear infinite;
+            opacity: 0.9;
+        }
+
+        /* different sizes + positions + timings */
+        .b1{ left:15%; width:10px; height:10px; animation-duration: 3.2s; animation-delay: 0.1s; }
+        .b2{ left:35%; width:6px;  height:6px;  animation-duration: 2.6s; animation-delay: 0.6s; }
+        .b3{ left:55%; width:12px; height:12px; animation-duration: 3.8s; animation-delay: 0.2s; }
+        .b4{ left:70%; width:7px;  height:7px;  animation-duration: 2.9s; animation-delay: 1.0s; }
+        .b5{ left:82%; width:9px;  height:9px;  animation-duration: 3.4s; animation-delay: 0.4s; }
+        .b6{ left:25%; width:5px;  height:5px;  animation-duration: 2.4s; animation-delay: 1.2s; }
+
+        @keyframes bubbleUp{
+            0%{
+                transform: translateY(0) scale(0.9);
+                opacity: 0.0;
+            }
+            10%{
+                opacity: 0.85;
+            }
+            100%{
+                transform: translateY(-220px) scale(1.2);
+                opacity: 0.0;
+            }
+        }
+
+        .carousel-bg{
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;         /* stretch/crop nicely */
+            opacity: 0.35;             /* transparency */
+            transform: scale(1.05);    /* slight zoom to avoid edge gaps */
+        }
+
+        .carousel-content{
+            position: relative;        /* keeps it above the image */
+            z-index: 1;
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: inline-block;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="/dashboard" class = "header-logo">DIET^RY APP</a>
+        <div class = "header-right">
+            <a href="/menu">MENU</a>
+            <a href="/about">ABOUT</a>
+            <a href="/profile">PROFILE</a>
+            <a href="/logout" class="logout-button" >LOGOUT</a>
+        </div>
+    </header>
+
+
+    <!-- Welcome section -->
+    <section class="welcome-section">
+        <h1>Welcome, {{user.fullname | title }}</h1>
+        <p style="color: rgb(200, 200, 200); font-size: 20px; margin-top: 10px; font-weight: lighter;">
+            Here's your personalized dashboard to track your dietary journey!
+    </section>
+
+    <!-- Dashboard hubs -->
+    <section class="dashboard-section">
+        <div class="dashboard-grid">
+
+            <div class="hub water-hub">
+                <h2 class="hub-title">Water Consumption</h2>
+
+                <div class="hub-content">
+                    <button class="water-btn" type="button" onclick="changeWater(-1)">−</button>
+                    
+                    <div id="waterWidget"
+                        style="display:none"
+                        data-water="{{ progress.get('water_glasses') or 0 }}"
+                        data-target="{{ prefs.water_target_glasses or 8 }}">
+                    </div>
+
+                    <div class="water-glass">
+                        <div class="water-fill" id="waterFill">
+                            <span class="bubble b1"></span>
+                            <span class="bubble b2"></span>
+                            <span class="bubble b3"></span>
+                            <span class="bubble b4"></span>
+                            <span class="bubble b5"></span>
+                            <span class="bubble b6"></span>
+                        </div>
+                    </div>
+
+                    <button class="water-btn" type="button" onclick="changeWater(1)">+</button>
+
+                    <div style="width:100%; text-align:center; margin-top:10px;">
+                    <span id="waterCount">{{ progress.get("water_glasses") or 0 }}</span>
+                    / {{ prefs.water_target_glasses or 8 }} glasses
+                    </div>
+                </div>
+            </div>
+
+            <div class="hub calorie-hub">
+                <h2 class="hub-title">Calories</h2>
+                <div class = "hub-content">
+                    
+                    <div class="calorie-meter" style="--angle: {{ (progress['calories'] / prefs.calorie_target) * 360 }}deg;">
+                        <div class="calorie-text"></div>
+                    </div>
+
+                    <div>
+                        <h3>
+                            Today
+                        </h3>
+                        <p>
+                            {{progress["calories"]}}/{{prefs.calorie_target}} kcal
+                        </p>
+                    </div>
+
+
+    
+
+                </div>
+            </div>
+
+            <!-- <a href="/menu" class="menu-link"> -->
+            <div class="hub food-hub" >
+                <h2 class="hub-title">Menu</h2>
+                <div class = "hub-content">
+                    <div class="carousel">
+                        {% for food in foods %}
+                        <a href="/menu" class="carousel-item">
+
+                            <img
+                                class="carousel-bg"
+                                src="{{ url_for('static', filename='images/food/' ~ food.food_name ~ '.jpg') }}"
+                                alt="{{ food.food_name }}"
+                            >
+
+                            <div class="carousel-content">
+                                <h3>{{ food.food_name }}</h3>
+                                <p>{{ food.calories }} kcal</p>
+                            </div>
+
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="hub nutrients-hub">
+                <h2 class="hub-title">Nutrients</h2>
+                <div class = "hub-content" style="gap : 25px">
+                    
+                    <div class="nutrient-bar">
+                        <span>{{prefs.carbs_target_g | round(0)}} g</span>
+                        <div class="bar">
+                            <div class="fill carbs" style = "--height: {{ (progress['carbs_g'] / prefs.carbs_target_g) * 100 }}%;"></div>
+                        </div>
+                        <span>Carbs</span>
+                        <span> {{ ((progress['carbs_g'] / prefs.carbs_target_g) * 100) | round(0) }}% </span>
+                    </div>
+
+                    <div class="nutrient-bar">
+                        <span>{{prefs.fat_target_g| round(0)}} g</span>
+                        <div class="bar">
+                            <div class="fill fats" style = "--height: {{ (progress['fat_g'] / prefs.fat_target_g) * 100 }}%;" ></div>
+                        </div>
+                        <span>Fats</span>
+                        <span> {{ ((progress['fat_g'] / prefs.fat_target_g) * 100) | round(0) }}% </span>
+                    </div>                    
+
+                    <div class="nutrient-bar">
+                        <span>{{prefs.protein_target_g| round(0)}} g</span>
+                        <div class="bar">
+                            <div class="fill protein" style="--height: {{ (progress['protein_g'] / prefs.protein_target_g) * 100 }}%;"></div>
+                        </div>
+                        <span>Protein</span>
+                        <span> {{ ((progress['protein_g'] / prefs.protein_target_g) * 100) | round(0) }}% </span>
+                    </div>
+
+
+                    <div class="nutrient-bar">
+                        <span>{{prefs.sugar_target_g| round(0)}} g</span>
+                        <div class="bar">
+                            <div class="fill sugar" style="--height: {{ (progress['sugar_g'] / prefs.sugar_target_g) * 100 }}%;"></div>
+                        </div>
+                        <span>Sugar</span>
+                        <span> {{ ((progress['sugar_g'] / prefs.sugar_target_g) * 100) | round(0) }}% </span>
+                    </div>
+
+                    <div class="nutrient-bar">
+                        <span>{{prefs.fiber_target_g| round(0)}} g</span>
+                        <div class="bar">
+                            <div class="fill fiber" style="--height: {{ (progress['fiber_g'] / prefs.fiber_target_g) * 100 }}%;"></div>
+                        </div>
+                        <span>Fiber</span>
+                        <span> {{ ((progress['fiber_g'] / prefs.fiber_target_g) * 100) | round(0) }}% </span>
+                    </div>
+                    
+                    <div class="nutrient-bar">
+                        <span>{{prefs.sodium_target_mg| round(0)}} mg</span>
+                        <div class="bar">
+                            <div class="fill sodium" style="--height: {{ (progress['sodium_mg'] / prefs.sodium_target_mg) * 100 }}%;"></div>
+                        </div>
+                        <span>Sodium</span>
+                        <span> {{ ((progress['sodium_mg'] / prefs.sodium_target_mg) * 100) | round(0) }}% </span>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+
+    <script>
+    const widget = document.getElementById("waterWidget");
+
+    let water = Number(widget.dataset.water || 0);
+    let target = Number(widget.dataset.target || 8);
+
+    function updateWaterUI() {
+        document.getElementById("waterCount").innerText = water;
+        const percent = target > 0 ? Math.min(100, (water / target) * 100) : 0;
+        document.getElementById("waterFill").style.height = percent + "%";
+    }
+
+    function changeWater(amount) {
+        const newWater = water + amount;
+        if (newWater < 0 || newWater > target) return;
+
+        fetch("/log-water", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount })
+        })
+        .then(r => r.json())
+        .then(data => {
+        water = Number(data.water || 0);
+        updateWaterUI();
+        });
+    }
+
+    updateWaterUI();
+    </script>
+</body>
+</html>

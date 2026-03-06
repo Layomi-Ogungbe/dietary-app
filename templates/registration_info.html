@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Preferences</title>
+
+    <style>
+        body {
+            font-family: 'Avenir', 'Georgia', sans-serif;
+            background: #fffdf4;
+        }
+        .login-box {
+            width: 450px;
+            min-height: 550px;
+            margin: 100px auto;
+            display: flex;
+            flex-direction: column;
+            padding: 50px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: rgba(218, 249, 227, 0.543);
+            align-content: center;
+        }
+        
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #4c8753;
+            font-size: 35px;
+        }
+
+        button {
+            width: 100%;
+            height : 40px;
+            padding: 10px;
+            margin-top: 10px;
+            background: #4c8753;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #3a6f40;
+        }
+
+        .number-field {
+            margin-top: 8px;
+            background-color: #ffffffba;
+            width: 80%;
+            padding: 4px 0;
+            padding-left: 8px;
+            text-align: right;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .number-field:focus {
+            outline: none;
+            border-bottom-color: #464545; 
+            
+        }
+
+        .select-wrapper {
+            position: relative;
+            width: 80%;
+        }
+
+        .select-display {
+            
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 18px;
+            font-size: 13px;
+            font-style: italic;
+            color: rgba(128, 128, 128, 0);
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .select-dropdown {
+            position: absolute;
+            top: 32px;
+            left: 0;
+            width: 110%;
+            max-height: 150px;
+            overflow-y: auto;
+            border: none;
+            background-color: rgba(218, 249, 227, 0);
+            z-index: 999;
+        }
+
+        .select-wrapper:focus-within .select-dropdown {
+            outline: none;
+        }
+
+        .select-dropdown option {
+            padding: 6px;
+        }
+
+        .info-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .login-box p {
+            font-size: 14px;
+            color: #464545;
+            margin-bottom: 50px;
+            line-height: 1.4;
+            text-align: justify;
+        }
+
+        .input-field{
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h1>User Information</h1>
+
+        <p>Please provide a little more information about yourself, so we can tailor your experience.</p>
+
+        <form method="POST" action="/setup-info">
+
+
+            <div class = "info-box">
+                <div class ="info">
+                    <div class ="input-field">
+                        <label>Age</label>
+                        <input type="number" name="age" class="number-field">
+                    </div>
+                    <div class ="input-field">
+                        <label>Weight(kg)</label>
+                        <input type="number" name="weight" class="number-field">
+                    </div>
+                    <div class ="input-field">
+                        <label>Height(cm)</label>
+                        <input type="number" name="height" class="number-field">
+                    </div>
+                </div>
+
+                <div class ="info">
+                    
+                    <div class ="input-field">
+                        <div class="select-wrapper" tabindex="0">
+                            <label>Gender</label>
+                            <div class="select-display">Select one</div>
+                            <select name="gender" class="select-dropdown">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class ="input-field">
+                        <div class="select-wrapper" tabindex="0">
+                            <label>Activity Level</label>
+                            <div class="select-display">Select one</div>
+                            <select name="activity_level" class="select-dropdown">
+                                <option value="sedentary">Sedentary</option>
+                                <option value="light">Light</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="vigorous">Vigorous</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+
+                    <div class ="input-field">
+                        <div class="select-wrapper" tabindex="0">
+                            <label>Dietary Goal</label>
+                            <div class="select-display">Select one</div>
+                            <select name="dietary_goal" class="select-dropdown">
+                                <option value="weight_loss">Weight Loss</option>
+                                <option value="muscle_gain">Muscle Gain</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="low_sugar">Low Sugar</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            
+            <button type="submit">Save Information</button>
+        </form>
+
+    </div>
+
+</body>
+</html>

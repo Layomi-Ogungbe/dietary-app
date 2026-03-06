@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Profile</title>
+	<style>
+		 /* ===== HEADER (unchanged) ===== */
+		header {
+			width: 100%;
+			height: 60px;
+			background-color: rgb(250, 248, 243);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			position: sticky;
+			top: 0;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			z-index: 1000;
+		}
+
+		.header-right { display: flex; gap: 0px; }
+
+		.header-right a {
+			text-align: center;
+			width: 100px;
+			text-decoration: none;
+			color: black;
+			padding: 19px 22px;
+			transition: 0.3s;
+		}
+
+		.header-right a:hover { background-color: #4c8753; color: white; }
+
+		.header-logo {
+			font-size: 24px;
+			font-weight: bold;
+			color: black;
+			margin-left: 20px;
+			text-decoration: none;
+		}
+
+		body {
+			background: #fffdf4;
+			font-family: Avenir, sans-serif;
+			margin: 0;
+		}
+
+		/* ===== PROFILE LAYOUT ===== */
+		.profile-container {
+			display: flex;
+			max-width: 1100px;
+			margin: 40px auto;
+			min-height: 500px;
+		}
+
+		/* LEFT SIDEBAR */
+		.sidebar {
+			display: flex;
+			flex-direction: column;
+			width: 200px;
+			padding: 20px;
+			gap: 10px;
+		}
+
+		.tab {
+			background: transparent;
+			border: none;
+			padding: 16px;
+			text-align: left;
+			font-size: 18px;
+			cursor: pointer;
+		}
+
+		.tab:focus { outline: none; }
+
+		.tab.active {
+			background-color: #4c8753bd;
+			font-weight: 600;
+		}
+
+		/* RIGHT CONTENT WRAPPER */
+		.content {
+			flex: 1;
+			padding: 0px 40px;
+		}
+
+		.content h2 {
+			color: #222322;
+			font-size: 38px;
+			margin-top: 0;
+		}
+
+		.panel { display: none; }
+		.panel.active { display: block; }
+
+		/* ===== VIEW BOX ===== */
+		.info-box {
+			display: flex;
+			align-items: flex-start;
+			border: 1.5px solid rgba(61, 61, 61, 0.276);
+			padding: 20px;
+			font-weight: 500;
+			margin-bottom: 24px;
+			max-width: 1300px;
+			background: transparent;
+		}
+
+		.info h3 {
+			font-size: 24px;
+			margin: 0 0 18px 0;
+		}
+
+		.info p {
+			font-size: 15px;
+			margin: 8px 0;
+		}
+
+		.edit-link {
+			margin: 10px 0 0 auto;
+			background: transparent;
+			border: none;
+			cursor: pointer;
+			font-size: 16px;
+			font-weight: bold;
+		}
+
+		/* ===== EDIT PANEL ===== */
+		.edit-panel {
+			border: 1.5px solid rgba(61, 61, 61, 0.206);
+			padding: 40px;
+			max-width: 1300px;
+			background: transparent;
+			margin-bottom: 24px;
+		}
+
+		.edit-title {
+			font-size: 24px;
+			font-weight: 800;
+			margin: 0 0 20px 0;
+			color: #111;
+		}
+
+		.form-grid {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px 20px;
+		}
+
+		.field {
+			flex: 0 0 calc(45% - 20px);
+			border: 1px solid rgba(0, 0, 0, 0.33);
+			border-radius: 8px;
+			padding: 7px 16px 10px;
+			margin: 0;
+			background: transparent;
+		}
+
+		.field legend {
+			padding: 0 10px;
+			font-size: 14px;
+			color: #111;
+		}
+
+		.field input,
+		.field select {
+			width: 100%;
+			border: none;
+			background: transparent;
+			font-size: 14px;
+			padding-top: 5px;
+			color: #111;
+		}
+
+		.field input:focus,
+		.field select:focus { outline: none; }
+
+		.edit-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 20px;
+			margin-top: 40px;
+		}
+
+		.btn-cancel, .btn-save {
+			width: 140px;
+			height: 50px;
+			border-radius: 14px;
+			font-size: 18px;
+			font-weight: 500;
+			cursor: pointer;
+		}
+
+		.btn-cancel {
+			background: transparent;
+			border: 1px solid rgba(0,0,0,0.65);
+			color: #111;
+		}
+
+		.btn-save {
+			background: #222;
+			border: none;
+			color: #fff;
+		}
+
+		/* ===== TAG PILLS (for preferences view) ===== */
+		.tag-group { margin: 6px 0 18px; }
+
+		.tag {
+			display: inline-block;
+			padding: 5px 12px;
+			border-radius: 20px;
+			background: rgba(76, 135, 83, 0.15);
+			font-size: 14px;
+			margin: 4px 6px 0 0;
+		}
+
+        .field.full {
+            flex: 1 1 100%;
+        }
+
+        .checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+            margin-top: 8px;
+        }
+
+        .checkbox {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .checkbox input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+		/* ===== Utility ===== */
+		.hidden { display: none !important; }
+
+
+
+        /*Report Stuff */
+
+        .report-box {
+            border: 1.5px solid rgba(61, 61, 61, 0.206);
+            padding: 20px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            max-width: 1300px;
+            background: transparent;
+        }
+
+        .report-charts {
+            display : grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .chart-card {
+            flex: 0 0 calc(50% - 10px);
+            margin-bottom: 50px;
+            padding: 8px;
+            background: transparent;
+            height: 400px;
+
+        }
+
+        .chart-card canvas {
+            width: 100%;
+            height: 50px; /* gives it a consistent visible height */
+            display: block;
+        }
+
+        .flash-container{
+            margin:20px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+
+        .flash{
+            padding:12px 16px;
+            border-radius:10px;
+            font-weight:bold;
+        }
+
+        .flash.error{
+            background:#f8d7da;
+            color:#842029;
+            border:1px solid #f5c2c7;
+        }
+
+        .flash.message{
+            background:#d1e7dd;
+            color:#0f5132;
+            border:1px solid #badbcc;
+        }
+
+	</style>
+</head>
+
+<body>
+	<header>
+		<a href="/dashboard" class="header-logo">DIET^RY APP</a>
+		<div class="header-right">
+			<a href="/menu">MENU</a>
+			<a href="/about">ABOUT</a>
+			<a href="/profile">PROFILE</a>
+			<a href="/logout">LOGOUT</a>
+		</div>
+	</header>
+
+	<div class="profile-container">
+		<!-- LEFT TABS -->
+		<div class="sidebar">
+			<button class="tab active" data-tab="account" type="button">Account</button>
+			<button class="tab" data-tab="preferences" type="button">Preferences</button>
+			<button class="tab" data-tab="reports" type="button">Reports</button>
+		</div>
+
+		<!-- RIGHT CONTENT -->
+		<div class="content">
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+			<!-- ACCOUNT PANEL -->
+			<section id="account" class="panel active">
+				<h2>Account Info</h2>
+
+				<!-- Account: VIEW -->
+				<div id="account-view" class="info-box">
+					<div class="info">
+						<h3>Personal Info</h3>
+						<p><strong>{{ user.fullname }}</strong></p>
+						<p>Email: {{ user.email }}</p>
+						<p style="font-style: italic; font-size: 15px; font-weight: lighter; color:#5e5d5d;">
+							You joined on {{ user.created_at }}
+						</p>
+					</div>
+					<button type="button" id="edit-account-btn" class="edit-link">Edit</button>
+				</div>
+
+				<!-- Account: EDIT -->
+				<div id="account-edit" class="edit-panel hidden">
+					<h2 class="edit-title">Personal info</h2>
+
+					<form method="POST" action="/profile/edit-account">
+						<div class="form-grid">
+							<fieldset class="field">
+								<legend>Full name *</legend>
+								<input type="text" name="fullname"
+											 value="{{ user.fullname if user else '' }}" required>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>Email *</legend>
+								<input type="email" name="email"
+											 value="{{ user.email if user else '' }}" required>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>Age *</legend>
+								<input type="number" name="age"
+											 value="{{ user.age if user else '' }}" min="1" required>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>Gender *</legend>
+								<select name="gender" required>
+									<option value="" disabled {% if not user or not user.gender %}selected{% endif %}>
+										Select Gender
+									</option>
+									<option value="male" {% if user and user.gender == 'male' %}selected{% endif %}>Male</option>
+                                    <option value="female" {% if user and user.gender == 'female' %}selected{% endif %}>Female</option>
+                                </select>
+							</fieldset>
+                            
+							<fieldset class="field">
+								<legend>Weight (kg) *</legend>
+								<input type="number" step="0.1" name="weight"
+											 value="{{ user.weight_kg if user else '' }}" min="1" required>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>Height (cm) *</legend>
+								<input type="number" name="height"
+											 value="{{ user.height_cm if user else '' }}" min="1" required>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>Activity level *</legend>
+								<select name="activity_level" required>
+									<option value="" disabled {% if not user or not user.activity_level %}selected{% endif %}>
+										Select activity level
+									</option>
+									<option value="sedentary" {% if user and user.activity_level == 'sedentary' %}selected{% endif %}>Sedentary</option>
+                                    <option value="light" {% if user and user.activity_level == 'light' %}selected{% endif %}>Light</option>
+									<option value="moderate" {% if user and user.activity_level == 'moderate' %}selected{% endif %}>Moderate</option>
+									<option value="vigorous" {% if user and user.activity_level == 'vigorous' %}selected{% endif %}>Vigorous</option>
+								</select>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>Dietary goal *</legend>
+								<select name="dietary_goal" required>
+									<option value="" disabled {% if not user or not user.dietary_goal %}selected{% endif %}>
+										Select goal
+									</option>
+									<option value="weight_loss" {% if user and user.dietary_goal == 'weight_loss' %}selected{% endif %}>Weight Loss</option>
+									<option value="maintenance" {% if user and user.dietary_goal == 'maintenance' %}selected{% endif %}>Maintenance</option>
+									<option value="muscle_gain" {% if user and user.dietary_goal == 'muscle_gain' %}selected{% endif %}>Muscle Gain</option>
+                                    <option value="low_sugar" {% if user and user.dietary_goal == 'low_sugar' %}selected{% endif %}>Low Sugar</option>
+								</select>
+							</fieldset>
+						</div>
+
+						<div class="edit-actions">
+							<button type="button" class="btn-cancel" id="cancel-account-btn">Cancel</button>
+							<button type="submit" class="btn-save">Save</button>
+						</div>
+					</form>
+				</div>
+
+
+				<!-- Password: VIEW (separate id + button id so JS doesn't clash) -->
+				<div id="password-view" class="info-box">
+					<div class="info">
+						<h3>Password</h3>
+						<p><strong>Current Password</strong></p>
+						<p>******</p>
+					</div>
+					<button type="button" id="edit-password-btn" class="edit-link">Edit</button>
+				</div>
+
+				<!-- Password: EDIT placeholder (optional, build later) -->
+				<div id="password-edit" class="edit-panel hidden">
+					<h2 class="edit-title">Change password</h2>
+					
+					<form method="POST" action="/profile/change-password">
+						<div class="form-grid">
+							<fieldset class="field">
+								<legend>Current Password</legend>
+								<input type="password" name="current_password"
+											 value="{{ user.password if user else '' }}" required>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>New Password</legend>
+								<input type="password" name="new_password"
+											 value="" required>
+							</fieldset>
+
+							<fieldset class="field">
+								<legend>Confirm Password</legend>
+								<input type="password" name="confirm_password"
+											 value="" required>
+							</fieldset>
+						</div>
+
+						<div class="edit-actions">
+							<button type="button" class="btn-cancel" id="cancel-password-btn">Cancel</button>
+							<button type="submit" class="btn-save">Save</button>
+						</div>
+
+					</form>
+				</div>
+
+			</section>
+
+			<!-- PREFERENCES PANEL -->
+			<section id="preferences" class="panel">
+				<h2>Preferences</h2>
+
+				<!-- Preferences: VIEW -->
+				<div id="preferences-view" class="info-box">
+					<div class="info">
+						<h3>Calorie Target</h3>
+						<p>{{ prefs.calorie_target }} kcal/day</p>
+
+						<h3>Preferred Tags</h3>
+						<div class="tag-group">
+							{% for tag in prefs.preferred_tags %}
+								<span class="tag">{{ tag }}</span>
+							{% endfor %}
+						</div>
+
+						<h3>Disliked Tags</h3>
+						<div class="tag-group">
+							{% for tag in prefs.disliked_tags %}
+								<span class="tag">{{ tag }}</span>
+							{% endfor %}
+						</div>
+
+						<h3>Allergies</h3>
+						<div class="tag-group">
+							{% for allergy in prefs.allergies %}
+								<span class="tag">{{ allergy }}</span>
+							{% endfor %}
+						</div>
+					</div>
+
+					<button type="button" id="edit-preferences-btn" class="edit-link">Edit</button>
+				</div>
+
+				<!-- Preferences: EDIT placeholder (build next) -->
+                <div id="preferences-edit" class="edit-panel hidden">
+                    <h2 class="edit-title">Edit preferences</h2>
+
+                    <form method="POST" action="/profile/preferences">
+                        <div class="form-grid">
+							
+                            <fieldset class="field">
+								<legend>Calorie Target *</legend>
+								<input type="number" name="calorie_target"
+											 value="{{ prefs.calorie_target }}" min="1200" required>
+							</fieldset>
+
+                            <fieldset class="field full">
+                                <legend>Preferred Tags</legend>
+
+                                <div class="checkbox-grid">
+                                    {% for tag in all_tags %}
+                                        <label class="checkbox">
+                                            <input type="checkbox"
+                                                name="preferred_tags"
+                                                value="{{ tag }}"
+                                                {% if tag in prefs.preferred_tags %}checked{% endif %}>
+                                            <span>{{ tag }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="field full">
+                                <legend>Disliked Tags</legend>
+
+                                <div class="checkbox-grid">
+                                    {% for tag in all_tags %}
+                                        <label class="checkbox">
+                                            <input type="checkbox"
+                                                name="disliked_tags"
+                                                value="{{ tag }}"
+                                                {% if tag in prefs.disliked_tags %}checked{% endif %}>
+                                            <span>{{ tag }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="field full">
+                                <legend>Allergies</legend>
+
+                                <div class="checkbox-grid">
+                                    {% for allergy in allergens %}
+                                        <label class="checkbox">
+                                            <input type="checkbox"
+                                                name="allergies"
+                                                value="{{ allergy }}"
+                                                {% if allergy in prefs.allergies %}checked{% endif %}>
+                                            <span>{{ allergy }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </fieldset>
+
+                        </div>
+
+                        <div class="edit-actions">
+                            <button type="button" class="btn-cancel" id="cancel-preferences-btn">Cancel</button>
+                            <button type="submit" class="btn-save">Save</button>
+                        </div>
+                    </form>
+                </div>
+			</section>
+
+			<!-- REPORTS PANEL -->
+			<section id="reports" class="panel">
+				<h2>Reports</h2>
+                <div class = "report-box">
+                    <div class="report-controls">
+                        <form id="report-form">
+                            <label>
+                                Start date
+                                <input type="date" name="start_date" required>
+                            </label>
+
+                            <label>
+                                End date
+                                <input type="date" name="end_date" required>
+                            </label>
+
+                            <button type="submit" class="btn-save">Generate report</button>
+                        </form>
+                    </div>
+
+                    <div id="report-preview" class="report-preview hidden">
+
+                        <div class="report-header">
+                            <h3>Report Preview</h3>
+
+                            <div class="report-user">
+                                <div><strong>Name:</strong> <span id="r-name"></span></div>
+                                <div><strong>Age:</strong> <span id="r-age"></span></div>
+                                <div><strong>Gender:</strong> <span id="r-gender"></span></div>
+                                <div><strong>Weight:</strong> <span id="r-weight"></span> kg</div>
+                                <div><strong>Height:</strong> <span id="r-height"></span> cm</div>
+                            </div>
+                        </div>
+
+                        {% set nutrients = [
+                            ("calories", "Calories", "tgt", "kcal"),
+                            ("protein", "Protein", "tgt", "g"),
+                            ("carbs", "Carbs" , "tgt", "g"),
+                            ("fat", "Fat", "tgt", "g"),
+                            ("sugar", "Sugar", "lmt", "g"),
+                            ("fibre", "Fibre", "min", "g"),
+                            ("sodium", "Sodium", "lmt", "mg"),
+                            ("water", "Water", "tgt", "glasses")
+                        ] %}
+
+                        <div class="report-charts">
+
+                            {% for key, label, type, unit in nutrients %}
+                            <div class="chart-card">
+                                <h4>{{ label }} ({{ unit }})</h4>
+                                <canvas id="chart-{{ key }}"></canvas>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="report-summaries">
+                        <h3>Summary</h3>
+
+                        <table id="summary-table" style="width:100%; border-collapse: collapse;">
+                            <thead>
+                            <tr>
+                                <th style="text-align:left; border-bottom:1px solid rgba(0,0,0,0.2); padding:8px;">Nutrient</th>
+                                <th style="text-align:right; border-bottom:1px solid rgba(0,0,0,0.2); padding:8px;">Total</th>
+                                <th style="text-align:right; border-bottom:1px solid rgba(0,0,0,0.2); padding:8px;">Avg/day</th>
+                                <th style="text-align:right; border-bottom:1px solid rgba(0,0,0,0.2); padding:8px;">Target</th>
+                                <th style="text-align:left; border-bottom:1px solid rgba(0,0,0,0.2); padding:8px;">Type</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="summary-body">
+                            <!-- JS will inject rows here -->
+                            </tbody>
+                        </table>
+                        </div>
+
+                    </div>
+
+                    <div id="report-downloads" class="report-downloads hidden">
+                        <button type="button" class="btn-save" id="download-pdf">Download PDF</button>
+                    </div>
+                </div>
+			</section>
+
+		</div>
+	</div>
+
+	<script>
+		// Tabs
+		const tabs = document.querySelectorAll(".tab");
+		const panels = document.querySelectorAll(".panel");
+
+		tabs.forEach(tab => {
+			tab.addEventListener("click", () => {
+				tabs.forEach(t => t.classList.remove("active"));
+				panels.forEach(p => p.classList.remove("active"));
+
+				tab.classList.add("active");
+				document.getElementById(tab.dataset.tab).classList.add("active");
+			});
+		});
+
+		// Small helper to toggle view/edit without breaking flex layout
+		function bindToggle(viewId, editId, editBtnId, cancelBtnId) {
+			const view = document.getElementById(viewId);
+			const edit = document.getElementById(editId);
+			const editBtn = document.getElementById(editBtnId);
+			const cancelBtn = document.getElementById(cancelBtnId);
+
+			if (!view || !edit || !editBtn || !cancelBtn) return;
+
+			editBtn.addEventListener("click", () => {
+				view.classList.add("hidden");
+				edit.classList.remove("hidden");
+			});
+
+			cancelBtn.addEventListener("click", () => {
+				edit.classList.add("hidden");
+				view.classList.remove("hidden");
+			});
+		}
+
+		// Account toggle
+		bindToggle("account-view", "account-edit", "edit-account-btn", "cancel-account-btn");
+
+		// Password toggle 
+		bindToggle("password-view", "password-edit", "edit-password-btn", "cancel-password-btn");
+
+		// Preferences toggle 
+		bindToggle("preferences-view", "preferences-edit", "edit-preferences-btn", "cancel-preferences-btn");
+
+
+        const reportForm = document.getElementById("report-form");
+        const reportPreview = document.getElementById("report-preview");
+        const reportDownloads = document.getElementById("report-downloads");
+
+        let charts = {}; // store chart instances so we can update/destroy them cleanly
+        let curReport = null;
+
+        function makeFlatLine(value, count) {
+            return Array(count).fill(value);
+        }
+
+
+        function renderLineChart(canvasId, labels, datasets) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            // if chart exists, destroy it (prevents overlay bugs)
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+
+            charts[canvasId] = new Chart(canvas, {
+                type: "line",
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: "index", intersect: false },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderSummaryTable(report, nutrients) {
+            const tbody = document.getElementById("summary-body");
+            if (!tbody) return;
+
+            tbody.innerHTML = "";
+
+            nutrients.forEach(([key, label, type, unit]) => {
+                const s = report.summary?.[key] || { total: 0, avg: 0, target: 0 };
+
+                let typeLabel = "Target";
+                if (type === "lmt") typeLabel = "Limit";
+                if (type === "min") typeLabel = "Minimum";
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td style="padding:8px; border-bottom:1px solid rgba(0,0,0,0.08);">${label} (${unit})</td>
+                <td style="padding:8px; border-bottom:1px solid rgba(0,0,0,0.08); text-align:right;">${s.total}</td>
+                <td style="padding:8px; border-bottom:1px solid rgba(0,0,0,0.08); text-align:right;">${s.avg}</td>
+                <td style="padding:8px; border-bottom:1px solid rgba(0,0,0,0.08); text-align:right;">${s.target}</td>
+                <td style="padding:8px; border-bottom:1px solid rgba(0,0,0,0.08);">${typeLabel}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderReport(report) {
+
+            curReport = report;
+            // user info
+            document.getElementById("r-name").textContent = report.user.name;
+            document.getElementById("r-age").textContent = report.user.age;
+            document.getElementById("r-gender").textContent = report.user.gender;
+            document.getElementById("r-weight").textContent = report.user.weight;
+            document.getElementById("r-height").textContent = report.user.height;
+
+            const nutrients = [
+                ["calories", "Calories", "tgt", "kcal"],
+                ["protein", "Protein", "tgt", "g"],
+                ["carbs", "Carbohydrates", "tgt", "g"],
+                ["fat", "Fat", "tgt", "g"],
+                ["sugar", "Sugar", "lmt", "g"],
+                ["fibre", "Fibre", "min", "g"],
+                ["sodium", "Sodium", "lmt", "mg"],
+                ["water", "Water", "tgt", "glasses"]
+            ];
+
+            renderSummaryTable(report, nutrients);
+
+            nutrients.forEach(([key, label, type, unit]) => {
+                let refLabel = "Target";
+                if (type === "lmt") refLabel = "Limit";
+                if (type === "min") refLabel = "Minimum";
+
+                renderLineChart(`chart-${key}`, report.labels, [
+                { label: "Actual", data: report.series[key].actual },
+                { label: "Average", data: report.series[key].avg },
+                { label: refLabel, data: report.series[key].target }
+                ]);
+            });
+        }
+
+        reportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const form = document.getElementById("report-form");
+            const start = form.elements["start_date"].value;
+            const end = form.elements["end_date"].value;
+
+            if (!start || !end) {
+                alert("Please select a start and end date.");
+                return;
+            }
+
+            const res = await fetch(`/report/data?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
+
+            if (!res.ok) {
+                const msg = await res.text();
+                alert("Report generation failed: " + msg);
+                return;
+            }
+
+            const report = await res.json();
+
+            reportPreview.classList.remove("hidden");
+            reportDownloads.classList.remove("hidden");
+
+            renderReport(report);
+        });
+
+        function buildPdfPayload() {
+            if (!curReport) {
+                alert("Generate a report first.");
+                return null;
+            }
+
+            const nutrients = [
+                ["calories", "Calories", "tgt"],
+                ["protein", "Protein", "tgt"],
+                ["carbs", "Carbohydrates", "tgt"],
+                ["fat", "Fat", "tgt"],
+                ["sugar", "Sugar", "lmt"],
+                ["fibre", "Fibre", "min"],
+                ["sodium", "Sodium", "lmt"],
+                ["water", "Water", "tgt"]
+            ];
+
+            // user info from preview 
+            const user = {
+                name: document.getElementById("r-name").textContent,
+                age: document.getElementById("r-age").textContent,
+                gender: document.getElementById("r-gender").textContent,
+                weight: document.getElementById("r-weight").textContent,
+                height: document.getElementById("r-height").textContent
+            };
+
+            // date range from the form
+            const form = document.getElementById("report-form");
+            const range = {
+                start: form.elements["start_date"].value,
+                end: form.elements["end_date"].value
+            };
+
+            // chart images (
+            const chartImages = {};
+            nutrients.forEach(([key]) => {
+                const canvas = document.getElementById(`chart-${key}`);
+                if (!canvas) return;
+                chartImages[key] = canvas.toDataURL("image/png");
+            });
+
+            const summary = {};
+            nutrients.forEach(([key, label, type]) => {
+                const s = curReport.summary?.[key] || { total: 0, avg: 0, target: 0 };
+                summary[key] = { label, type, ...s };
+            });
+
+            return { user, range, summary, charts: chartImages };
+        }
+
+
+        async function downloadPdfFromServer(payload) {
+            const res = await fetch("/report/pdf", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                alert("PDF generation failed.");
+                return;
+            }
+
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "dietary-report.pdf";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            URL.revokeObjectURL(url);
+        }
+
+
+        document.getElementById("download-pdf").addEventListener("click", async () => {
+            const payload = buildPdfPayload();
+            if (!payload) return;
+            await downloadPdfFromServer(payload);
+        });
+
+
+	</script>
+</body>
+</html>

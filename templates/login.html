@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+
+    <style>
+        body {
+            font-family: 'Avenir', 'Georgia', sans-serif;
+            background: #fffdf4;
+        }
+        .login-box {
+            width: 450px;
+            min-height: 550px;
+            margin: 100px auto;
+            padding: 50px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: rgba(218, 249, 227, 0.543);
+            align-content: center;
+        }
+        
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4c8753;
+            font-size: 35px;
+        }
+
+        .login-input {
+            background-color: #91c49700;
+            width: 100%;
+            padding: 4px 0;
+            padding-left: 8px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            font-size: 12px;
+            font-style : italic;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-bottom-color: #464545; /* nice focus color */
+        }
+
+        button {
+            width: 100%;
+            height : 40px;
+            padding: 10px;
+            margin-top: 10px;
+            background: #4c8753;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #3a6f40;
+        }
+
+        h2{
+            margin-bottom: 8px;
+            color: gray;
+            font-size: 15px;
+            margin-left: 7px;
+            font-style: italic;
+            font-weight: lighter;
+        }
+
+        h3 {
+            text-align: center;
+            color: gray;
+            font-size: 14px;
+            font-weight: lighter;
+            font-style: italic;
+            transition: 0.3s;
+        }
+
+        h3 a {
+            color: gray;
+            
+        }
+
+        h3 a:hover {
+            text-decoration: none;
+            color: #4c8753;
+        }
+
+    
+
+        
+
+    </style>
+
+</head>
+<body>
+    <div class= "login-box">
+        <h1>Welcome Back 🥬</h1>
+        <h2>Please enter your email and password</h2>
+
+        {% if error %}
+            <div style="color: red; text-align: center; margin-bottom: 15px; font-size: 14px;">
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <form method="POST" action="/login">
+            <input type="email" name="email" placeholder="Email" class="login-input" required>
+
+            <br><br>
+
+            
+            <input type="password" name="password" placeholder="Password" class="login-input" required>
+
+            <br><br>
+
+            <button type="submit">Login</button>
+
+
+        </form>
+
+        <h3>
+            Don't have an account? <a href="/register">Register here</a>
+        </h3>
+    </div>
+
+
+</body>
+</html>
